@@ -1,6 +1,17 @@
 # vLLM
 
 
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+nvm install --lts    # 安装最新的LTS版本
+
+nvm list  # Windows
+nvm ls    # macOS/Linux
+
+nvm use 18.19.0  # 切换到指定版本
+nvm use --lts    # 切换到LTS版本
+
+nvm alias default 18.19.0
 
 # 清除现有配置
 conda config --remove-key channels
