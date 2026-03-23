@@ -5,9 +5,9 @@
 
 conda create --name vllm python=3.12.9
 conda activate vllm
-pip install vllm -i https://mirrors.huaweicloud.com/repository/pypi/simple
-pip install modelscope -i https://mirrors.huaweicloud.com/repository/pypi/simple
-pip install modelscope -i https://mirrors.huaweicloud.com/repository/pypi/simple
+pip install vllm -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install modelscope -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install modelscope -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 
