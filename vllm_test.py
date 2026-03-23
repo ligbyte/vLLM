@@ -5,7 +5,7 @@ def stream_chat_response():
     response = requests.post(
         "http://localhost:8000/v1/chat/completions",
         json={
-            "model": "/root/deepseekr1_1.5b/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+            "model": "/home/lime/AI/vllm/models/deepseekr1_1.5b/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
             "messages": [{"role": "user", "content": "写一篇关于AI安全的短论文"}],
             "stream": True,
             "temperature": 0.7
