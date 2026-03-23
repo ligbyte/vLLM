@@ -1,6 +1,17 @@
 # vLLM
 
 
+
+# 清除现有配置
+conda config --remove-key channels
+
+# 添加清华源
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+conda config --set show_channel_urls yes
+
+
 ```shell
 
 
