@@ -3,21 +3,33 @@
 
 ```shell
 
+
+
+#下载
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
+#安装，该操作会下载800m 的文件
+bash miniconda.sh 
+
+
 conda create --name vllm python=3.12.9
+
 conda activate vllm
+
 pip install vllm -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install modelscope -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install modelscope -i https://pypi.tuna.tsinghua.edu.cn/simple
+
 ```
 
 
 #创建下载文件
-vi down_model.py
+touch down_model.py
 
-#下载代码
+vim down_model.py
+
+#touch down_model.py 文件中添加 下载代码
 from modelscope import snapshot_download
 model_dir = snapshot_download('deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B', 
-                              cache_dir='/root/deepseekr1_1.5b', 
+                              cache_dir='/home/lime/AI/vllm/models/deepseekr1_1.5b', 
                               revision='master')
 #执行下载
 python down_model.py
@@ -25,9 +37,7 @@ python down_model.py
 
 7.启动模型
 
-vllm serve \
-/root/deepseekr1_1.5b/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
---dtype=half
+vllm serve /home/lime/AI/vllm/models/deepseekr1_1.5b/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --dtype=half
 
 
 8.访问模型
