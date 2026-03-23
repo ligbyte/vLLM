@@ -254,7 +254,7 @@ if echo "$MODEL_PATH" | grep -q "\._____temp"; then
 fi
 
 echo "🚀 正在启动 vLLM 服务..."
-echo "   命令: vllm serve $MODEL_PATH --dtype=half"
+echo "   命令: vllm serve $MODEL_PATH --dtype=half --disable-cuda-graph"
 echo "------------------------------------------"
 
 # 启动 vLLM 服务
