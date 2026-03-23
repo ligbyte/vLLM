@@ -45,7 +45,6 @@ if command -v conda &> /dev/null; then
     CONDA_FOUND=true
     
     # 尝试获取 conda 的基础路径以便 source conda.sh
-    # 方法：运行 conda info --base
     CONDA_BASE=$(conda info --base 2>/dev/null)
     
     if [ -n "$CONDA_BASE" ] && [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
@@ -149,30 +148,91 @@ echo "------------------------------------------"
 mkdir -p "$CACHE_DIR"
 python "$DOWNLOAD_SCRIPT"
 
-# --- 6. 智能定位模型实际路径 ---
+# --- 6. 智能定位模型实际路径 (修复 ._____temp 问题) ---
 echo "⏳ 正在定位模型实际路径..."
-MODEL_SUFFIX=$(basename "$MODEL_ID")
-FOUND_PATH=$(find "$CACHE_DIR" -type d -name "$MODEL_SUFFIX" | head -n 1)
 
-if [ -z "$FOUND_PATH" ]; then
-    echo "⚠️ 警告：未能通过名称自动找到模型子目录，尝试使用缓存根目录。"
-    MODEL_PATH="$CACHE_DIR"
-else
-    MODEL_PATH="$FOUND_PATH"
-    echo "✅ 找到模型路径: $MODEL_PATH"
+MODEL_PATH=""
+
+# 策略 1: 优先查找包含 config.json 的目录 (最可靠)
+# 排除 ._____temp 等临时目录
+echo "   搜索策略 1: 查找包含 config.json 的有效模型目录..."
+CONFIG_PATH=$(find "$CACHE_DIR" -type f -name "config.json" 2>/dev/null | head -n 1)
+
+if [ -n "$CONFIG_PATH" ]; then
+    # 获取 config.json 所在的目录
+    CANDIDATE_PATH=$(dirname "$CONFIG_PATH")
+    
+    # 检查是否在 ._____temp 临时目录中
+    if echo "$CANDIDATE_PATH" | grep -q "\._____temp"; then
+        echo "   ⚠️ 发现模型在临时目录中: $CANDIDATE_PATH"
+        echo "   尝试查找是否有已移出的正式目录..."
+        
+        # 提取模型名 (DeepSeek-R1-Distill-Qwen-1.5B)
+        MODEL_SUFFIX=$(basename "$MODEL_ID")
+        
+        # 在 CACHE_DIR 下查找不在 ._____temp 中的模型目录
+        FORMAL_PATH=$(find "$CACHE_DIR" -type d -name "$MODEL_SUFFIX" ! -path "*/._____temp/*" | head -n 1)
+        
+        if [ -n "$FORMAL_PATH" ] && [ -f "$FORMAL_PATH/config.json" ]; then
+            MODEL_PATH="$FORMAL_PATH"
+            echo "   ✅ 找到正式模型目录: $MODEL_PATH"
+        else
+            # 如果没有正式目录，使用临时目录路径 (模型仍可运行)
+            MODEL_PATH="$CANDIDATE_PATH"
+            echo "   ⚠️ 未找到正式目录，将使用临时目录路径 (建议手动移动模型)"
+            echo "   可使用以下命令清理临时目录标记:"
+            echo "   mv $CANDIDATE_PATH $CACHE_DIR/"
+        fi
+    else
+        MODEL_PATH="$CANDIDATE_PATH"
+        echo "   ✅ 找到有效模型目录: $MODEL_PATH"
+    fi
 fi
 
-# 验证路径有效性
+# 策略 2: 如果策略 1 失败，按模型名查找
+if [ -z "$MODEL_PATH" ]; then
+    echo "   搜索策略 2: 按模型名称查找..."
+    MODEL_SUFFIX=$(basename "$MODEL_ID")
+    
+    # 优先查找不在 ._____temp 中的目录
+    FOUND_PATH=$(find "$CACHE_DIR" -type d -name "$MODEL_SUFFIX" ! -path "*/._____temp/*" | head -n 1)
+    
+    if [ -z "$FOUND_PATH" ]; then
+        # 如果找不到，再允许在 ._____temp 中查找
+        FOUND_PATH=$(find "$CACHE_DIR" -type d -name "$MODEL_SUFFIX" | head -n 1)
+    fi
+    
+    if [ -n "$FOUND_PATH" ]; then
+        if echo "$FOUND_PATH" | grep -q "\._____temp"; then
+            echo "   ⚠️ 模型位于临时目录: $FOUND_PATH"
+        fi
+        MODEL_PATH="$FOUND_PATH"
+    fi
+fi
+
+# 最终验证
+if [ -z "$MODEL_PATH" ]; then
+    echo "❌ 错误: 无法在 $CACHE_DIR 下找到模型目录。"
+    echo "   请检查下载是否完成: ls -R $CACHE_DIR"
+    exit 1
+fi
+
+# 验证路径有效性 (检查关键文件)
 if [ ! -f "$MODEL_PATH/config.json" ] && [ ! -f "$MODEL_PATH/model.safetensors" ]; then
-    DEEPER_PATH=$(find "$MODEL_PATH" -maxdepth 2 -name "config.json" | head -n 1)
-    if [ -n "$DEEPER_PATH" ]; then
-        MODEL_PATH=$(dirname "$DEEPER_PATH")
-        echo "✅ 修正后的模型路径: $MODEL_PATH"
+    # 尝试再找一层
+    DEEPER_CONFIG=$(find "$MODEL_PATH" -maxdepth 2 -name "config.json" | head -n 1)
+    if [ -n "$DEEPER_CONFIG" ]; then
+        MODEL_PATH=$(dirname "$DEEPER_CONFIG")
+        echo "   ✅ 修正后的模型路径: $MODEL_PATH"
     else
-        echo "❌ 错误：在 $MODEL_PATH 下未找到有效的模型文件。"
+        echo "❌ 错误: 在 $MODEL_PATH 下未找到有效的模型文件 (config.json 或 model.safetensors)。"
+        echo "   目录内容:"
+        ls -la "$MODEL_PATH" 2>/dev/null || echo "   目录不存在或为空"
         exit 1
     fi
 fi
+
+echo "✅ 最终模型路径: $MODEL_PATH"
 
 # --- 7. 启动服务 ---
 echo ""
@@ -183,6 +243,16 @@ echo "📦 模型: $MODEL_ID"
 echo "📂 路径: $MODEL_PATH"
 echo "🔧 精度: half (FP16)"
 echo ""
+
+# 如果路径包含 ._____temp，给出提示
+if echo "$MODEL_PATH" | grep -q "\._____temp"; then
+    echo "⚠️ 注意: 模型当前位于临时目录中。"
+    echo "   建议执行以下命令将模型移到正式目录:"
+    MODEL_NAME=$(basename "$MODEL_PATH")
+    echo "   mv $MODEL_PATH $CACHE_DIR/$MODEL_NAME"
+    echo ""
+fi
+
 echo "🚀 正在启动 vLLM 服务..."
 echo "   命令: vllm serve $MODEL_PATH --dtype=half"
 echo "------------------------------------------"
