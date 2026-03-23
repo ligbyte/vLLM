@@ -258,4 +258,4 @@ echo "   命令: vllm serve $MODEL_PATH --dtype=half --disable-cuda-graph"
 echo "------------------------------------------"
 
 # 启动 vLLM 服务
-vllm serve "$MODEL_PATH" --dtype=half
+vllm serve "$MODEL_PATH" --dtype=half --disable-cuda-graph
