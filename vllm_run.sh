@@ -5,10 +5,10 @@
 # ==============================================================================
 
 # 1. 模型标识 (ModelScope ID)
-MODEL_ID="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+MODEL_ID="Qwen/Qwen3-Coder-30B-A3B-Instruct"
 
 # 2. 缓存根目录 (使用 $HOME 自动适配当前用户)
-CACHE_DIR="$HOME/AI/vllm/models/deepseekr1_1.5b"
+CACHE_DIR="$HOME/AI/vllm/models/Qwen3_Coder_30B"
 
 # 3. Conda 环境名称
 ENV_NAME="vllm"
