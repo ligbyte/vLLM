@@ -5,10 +5,10 @@
 # ==============================================================================
 
 # 1. 模型标识 (ModelScope ID)
-MODEL_ID="MiniMax/MiniMax-Text-01"
+MODEL_ID="Tesslate/OmniCoder-9B"
 
 # 2. 缓存根目录 (使用 $HOME 自动适配当前用户)
-CACHE_DIR="$HOME/AI/vllm/models/MiniMax_Text_01"
+CACHE_DIR="$HOME/AI/vllm/models/OmniCoder-9B"
 
 # 3. Conda 环境名称
 ENV_NAME="vllm"
