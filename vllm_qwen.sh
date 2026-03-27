@@ -5,10 +5,10 @@
 # ==============================================================================
 
 # 1. 模型标识 (ModelScope ID)
-MODEL_ID="Qwen/Qwen2.5-14B-Instruct-AWQ"
+MODEL_ID="Qwen/Qwen2.5-1.5B-Instruct"
 
 # 2. 缓存根目录 (使用 $HOME 自动适配当前用户)
-CACHE_DIR="$HOME/AI/vllm/models/Qwen2.5_14B"
+CACHE_DIR="$HOME/AI/vllm/models/Qwen2.5_1.5B"
 
 # 3. Conda 环境名称
 ENV_NAME="vllm"
@@ -254,8 +254,8 @@ if echo "$MODEL_PATH" | grep -q "\._____temp"; then
 fi
 
 echo "🚀 正在启动 vLLM 服务..."
-echo "   命令: vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --quantization awq_marlin --gpu-memory-utilization 0.8 --max-model-len 32768 --enable-auto-tool-choice --tool-call-parser hermes"
+echo "   命令: vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --quantization awq --gpu-memory-utilization 0.8 --max-model-len 32768 --enable-auto-tool-choice --tool-call-parser hermes"
 echo "------------------------------------------"
 
 # 启动 vLLM 服务
-vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --quantization awq_marlin --gpu-memory-utilization 0.8 --max-model-len 32768 --enable-auto-tool-choice --tool-call-parser hermes
+vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 16768 --enable-auto-tool-choice --tool-call-parser hermes
