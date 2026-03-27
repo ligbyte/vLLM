@@ -5,10 +5,10 @@
 # ==============================================================================
 
 # 1. 模型标识 (ModelScope ID)
-MODEL_ID="Qwen/Qwen3-Coder-30B-A3B-Instruct"
+MODEL_ID="mlx-community/MiniMax-M2.5-4bit"
 
 # 2. 缓存根目录 (使用 $HOME 自动适配当前用户)
-CACHE_DIR="$HOME/AI/vllm/models/Qwen3_Coder_30B"
+CACHE_DIR="$HOME/AI/vllm/models/MiniMax_M2.5"
 
 # 3. Conda 环境名称
 ENV_NAME="vllm"

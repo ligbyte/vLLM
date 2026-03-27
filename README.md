@@ -1,6 +1,9 @@
 # vLLM
 
 
+
+conda remove --name vllm --all
+
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
 nvm install --lts    # 安装最新的LTS版本
