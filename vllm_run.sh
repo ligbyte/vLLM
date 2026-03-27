@@ -5,10 +5,10 @@
 # ==============================================================================
 
 # 1. 模型标识 (ModelScope ID)
-MODEL_ID="Tesslate/OmniCoder-9B"
+MODEL_ID="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 
 # 2. 缓存根目录 (使用 $HOME 自动适配当前用户)
-CACHE_DIR="$HOME/AI/vllm/models/OmniCoder-9B"
+CACHE_DIR="$HOME/AI/vllm/models/deepseekr1_1.5b"
 
 # 3. Conda 环境名称
 ENV_NAME="vllm"
