@@ -5,10 +5,10 @@
 # ==============================================================================
 
 # 1. 模型标识 (ModelScope ID)
-MODEL_ID="Qwen/Qwen2.5-1.5B-Instruct"
+MODEL_ID="tclf90/glm-4-9b-0414-gptq-int4"
 
 # 2. 缓存根目录 (使用 $HOME 自动适配当前用户)
-CACHE_DIR="$HOME/AI/vllm/models/Qwen2.5_1.5B"
+CACHE_DIR="$HOME/AI/vllm/models/glm_4_9b"
 
 # 3. Conda 环境名称
 ENV_NAME="vllm"
@@ -27,7 +27,7 @@ MINICONDA_INSTALLER="$HOME/miniconda.sh"
 set -e # 遇到错误立即退出
 
 echo "=========================================="
-echo "🚀 vLLM + Qwen 自动化部署脚本"
+echo "🚀 vLLM + GLM 自动化部署脚本"
 echo "=========================================="
 echo "当前用户: $(whoami)"
 echo "主目录: $HOME"
@@ -99,7 +99,7 @@ fi
 if conda env list | grep -q "^$ENV_NAME "; then
     echo "✅ Conda 环境 '$ENV_NAME' 已存在，跳过创建。"
 else
-    echo "⏳ 正在创建 Conda 环境 '$ENV_NAME' (Python $PYTHON_VERSION)..."
+    echo "⏳ 正在创建 Co/home/lime/AI/vllm/models/glm_4_9b/ZhipuAI/glm-4-9nda 环境 '$ENV_NAME' (Python $PYTHON_VERSION)..."
     conda create -n "$ENV_NAME" python=$PYTHON_VERSION -y
     echo "✅ 环境创建完成。"
 fi
@@ -167,7 +167,7 @@ if [ -n "$CONFIG_PATH" ]; then
         echo "   ⚠️ 发现模型在临时目录中: $CANDIDATE_PATH"
         echo "   尝试查找是否有已移出的正式目录..."
         
-        # 提取模型名 (Qwen2.5_1.5B)
+        # 提取模型名 (glm-4-9b)
         MODEL_SUFFIX=$(basename "$MODEL_ID")
         
         # 在 CACHE_DIR 下查找不在 ._____temp 中的模型目录
@@ -222,6 +222,8 @@ if [ ! -f "$MODEL_PATH/config.json" ] && [ ! -f "$MODEL_PATH/model.safetensors" 
     # 尝试再找一层
     DEEPER_CONFIG=$(find "$MODEL_PATH" -maxdepth 2 -name "config.json" | head -n 1)
     if [ -n "$DEEPER_CONFIG" ]; then
+    sys.exit(1)
+EOF
         MODEL_PATH=$(dirname "$DEEPER_CONFIG")
         echo "   ✅ 修正后的模型路径: $MODEL_PATH"
     else
@@ -254,8 +256,8 @@ if echo "$MODEL_PATH" | grep -q "\._____temp"; then
 fi
 
 echo "🚀 正在启动 vLLM 服务..."
-echo "   命令: vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --quantization awq --gpu-memory-utilization 0.8 --max-model-len 32768 --enable-auto-tool-choice --tool-call-parser hermes"
+echo "   命令: vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 1024 --enforce-eager"
 echo "------------------------------------------"
 
 # 启动 vLLM 服务
-vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 16768 --enable-auto-tool-choice --tool-call-parser hermes
+vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 2048 --quantization gptq

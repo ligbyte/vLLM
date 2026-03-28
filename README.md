@@ -17,6 +17,38 @@ nvm use --lts    # 切换到LTS版本
 
 nvm alias default 18.19.0
 
+
+
+
+node -v
+
+## claude-code 安装
+npm install -g @anthropic-ai/claude-code
+claude -v
+
+## codex安装
+npm install -g @openai/codex
+codex -V
+
+## gemini安装
+npm install -g @google/gemini-cli
+gemini -v
+
+
+## opencode安装
+cargo install opencode
+
+
+## openclaw 安装
+sudo npm install -g openclaw@latest
+openclaw onboard
+openclaw configure
+
+
+
+
+
+
 # 清除现有配置
 conda config --remove-key channels
 

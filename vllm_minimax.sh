@@ -168,7 +168,7 @@ if [ -n "$CONFIG_PATH" ]; then
         echo "   ⚠️ 发现模型在临时目录中: $CANDIDATE_PATH"
         echo "   尝试查找是否有已移出的正式目录..."
         
-        # 提取模型名 (MiniMax-M2.5-4bit)
+        # 提取模型名 (MiniMax-M2.1)
         MODEL_SUFFIX=$(basename "$MODEL_ID")
         
         # 在 CACHE_DIR 下查找不在 ._____temp 中的模型目录
