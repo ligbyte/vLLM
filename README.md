@@ -1,6 +1,7 @@
 # vLLM
 
 
+conda remove --name vllm --all;rm -rfv models/;rm -rfv down_model.py
 
 conda remove --name vllm --all
 
