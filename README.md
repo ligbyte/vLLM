@@ -79,83 +79,33 @@ pip install modelscope -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 
-#创建下载文件
-touch down_model.py
-
-vim down_model.py
-
-#touch down_model.py 文件中添加 下载代码
-from modelscope import snapshot_download
-model_dir = snapshot_download('deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B', 
-                              cache_dir='/home/lime/AI/vllm/models/deepseekr1_1.5b', 
-                              revision='master')
-#执行下载
-python down_model.py
 
 
-7.启动模型
+
+
+## 7.启动模型
 
 vllm serve /home/lime/AI/vllm/models/deepseekr1_1.5b/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --dtype=half
 
 
-8.访问模型
+## 8.访问模型
+
+curl http://127.0.0.1:8000/v1/models
 
 
 
-import requests
-import json
+## 9. 常见问题与解决方案
 
-def stream_chat_response():
-    response = requests.post(
-        "http://localhost:8000/v1/chat/completions",
-        json={
-            "model": "/root/deepseekr1_1.5b/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-            "messages": [{"role": "user", "content": "写一篇关于AI安全的短论文"}],
-            "stream": True,
-            "temperature": 0.7
-        },
-        stream=True
-    )
+- **显存不足**：若显存不足，尝试量化（如 AWQ）或减少 `max-model-len`。
+- **Tokenization 错误**：确保转换脚本中使用 `trust_remote_code=True`，并验证 `config.json` 中的 `auto_map` 配置。
+- **API 调用失败**：检查服务端口是否被占用，或防火墙设置是否允许访问。
 
-    print("AI: ", end="", flush=True)  # 初始化输出前缀
-    full_response = []
+## 10. 优化建议
 
-    try:
-        for chunk in response.iter_lines():
-            if chunk:
-                # 处理数据帧
-                decoded_chunk = chunk.decode('utf-8').strip()
-                if decoded_chunk.startswith('data: '):
-                    json_data = decoded_chunk[6:]  # 去除"data: "前缀
+- **量化部署**：使用 AWQ 量化可将显存需求降至 10GB 以下，适合消费级显卡。
+- **参数调整**：根据文档推荐，设置 `temperature=0.6`、`top_p=0.95` 以平衡创造力与稳定性。
 
-                    try:
-                        data = json.loads(json_data)
-                        if 'choices' in data and len(data['choices']) > 0:
-                            delta = data['choices'][0].get('delta', {})
-
-                            # 提取内容片段
-                            content = delta.get('content', '')
-                            if content:
-                                print(content, end='', flush=True)  # 实时流式输出
-                                full_response.append(content)
-
-                            # 检测生成结束
-                            if data['choices'][0].get('finish_reason'):
-                                print("\n")  # 生成结束时换行
-
-                    except json.JSONDecodeError:
-                        pass  # 忽略不完整JSON数据
-
-    except KeyboardInterrupt:
-        print("\n\n[用户中断了生成]")
-
-    return ''.join(full_response)
-
-# 执行对话
-if __name__ == "__main__":
-    result = stream_chat_response()
-    print("\n--- 完整响应 ---")
-    print(result)
+通过以上步骤，即可在本地环境中高效部署 GLM-Z1-9B 模型，并通过 API 进行推理。
 	
 	
 	
