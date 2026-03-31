@@ -1,0 +1,27 @@
+1. 测试 /v1/models（查看模型是否加载）
+
+curl http://localhost:8000/v1/models
+
+2. 测试 /v1/completions（补全接口）
+
+curl http://localhost:8000/v1/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "prompt": "你好，请介绍一下你自己",
+    "max_tokens": 200,
+    "temperature": 0.7
+  }'
+
+
+  3. 测试 /v1/chat/completions（对话接口）
+
+  curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "messages": [
+      {"role": "user", "content": "写一个简短的春天文案"}
+    ],
+    "temperature": 0.7
+  }'
