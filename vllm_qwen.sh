@@ -258,4 +258,4 @@ echo "   命令: vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --quantizat
 echo "------------------------------------------"
 
 # 启动 vLLM 服务
-vllm serve "$MODEL_PATH" --host 0.0.0.0 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 16768 --enable-auto-tool-choice --tool-call-parser hermes
+vllm serve "$MODEL_PATH" --served-model-name Qwen2.5-1.5B-Instruct --host 0.0.0.0 --port 8000 --gpu-memory-utilization 0.8 --max-model-len 16768 --enable-auto-tool-choice --tool-call-parser hermes
